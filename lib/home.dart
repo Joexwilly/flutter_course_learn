@@ -5,6 +5,7 @@ import 'pages/home_data/news_card.dart';
 
 import 'pages/cart.dart';
 
+import 'pages/joeorderpage.dart';
 import 'pages/search.dart';
 import 'pages/shop.dart';
 
@@ -87,37 +88,47 @@ class _JoeHomePageState extends State<JoeHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: pageIndex,
         onTap: (index) {
-          //if index is 2 go to page
-          if (index == 2) {
-            //go to page
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => JoeCartPage()));
-          } else {
-            //rebuild UI
-            setState(() {
-              pageIndex = index;
-              //update title
-              if (index == 0) {
-                apptitle = "News App";
-              } else {
-                apptitle = "Ecommerce";
-              }
-            });
+          switch (index) {
+            case 2:
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => JoeCartPage()));
+
+              break;
+            case 3:
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => JoeOrderPage()));
+              break;
+            default:
+              setState(() {
+                pageIndex = index;
+                if (index == 0) {
+                  apptitle = "News App";
+                } else {
+                  apptitle = "Ecommerce";
+                }
+              });
           }
         },
         selectedItemColor: Colors.red,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(
+              Icons.home,
+              color: Colors.black,
+            ),
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag),
+            icon: Icon(Icons.shopping_bag, color: Colors.black),
             label: "Ecommerce",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
+            icon: Icon(Icons.shopping_cart, color: Colors.black),
             label: "Cart",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_bag_outlined, color: Colors.black),
+            label: "Order",
           ),
         ],
       ),

@@ -17,6 +17,15 @@ class _JoeSearchPageState extends State<JoeSearchPage> {
   //search controller
   final TextEditingController _searchController = TextEditingController();
   dynamic searchResult = [];
+
+  //on init
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    searchPost("");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
