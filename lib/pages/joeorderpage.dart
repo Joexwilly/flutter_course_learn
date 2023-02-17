@@ -22,14 +22,15 @@ class _JoeOrderPageState extends State<JoeOrderPage> {
   getOrders() async {
     var dio = Dio();
     var user = await userData();
-
-    var response = await dio.get(
-      "https://xtrahola.com/order-api/get_order/${user["id"]}",
-    );
-    //set state
-    setState(() {
-      orders = response.data;
-    });
+    if (user != null) {
+      var response = await dio.get(
+        "https://xtrahola.com/order-api/get_order/${user["id"]}",
+      );
+      //set state
+      setState(() {
+        orders = response.data;
+      });
+    }
   }
 
   //userdata

@@ -32,6 +32,7 @@ class _JoeCheckoutState extends State<JoeCheckout> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     plugin.initialize(
         publicKey: "pk_test_c3e1a97b37a782f5967da897c9e8ef7068fba62a");
   }
@@ -44,6 +45,7 @@ class _JoeCheckoutState extends State<JoeCheckout> {
     if (user_detail == null) {
       return false;
     } else {
+      
       return true;
     }
   }
@@ -57,6 +59,54 @@ class _JoeCheckoutState extends State<JoeCheckout> {
       total += price * quantity;
     }
     return total;
+  }
+
+  //process flutterwave
+  processFlutterwave() async {
+    //get data from shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    //get string
+    var userdetail = prefs.getString('userdetail');
+    //decode userdetail
+    var userdetaildecoded = jsonDecode(userdetail!);
+    var user_id = userdetaildecoded["user_details"]["id"];
+    print(userdetaildecoded["userDetails"]);
+    print(userdetaildecoded["user_details"]);
+
+    //data
+    var data = {
+      'amount': totalAmount,
+      'email': "${userdetaildecoded["user_details"]["email"]}",
+      'phone': "",
+      'name': "${userdetaildecoded["user_details"]["name"]}",
+      'title': 'Products Flutterwave payment',
+      'currency': "NGN",
+      'tx_ref': "AdeFlutterwave-${DateTime.now().millisecondsSinceEpoch}",
+      'icon': "https://www.aqskill.com/wp-content/uploads/2020/05/logo-pde.png",
+      'public_key': "FLWPUBK_TEST-7cd2262e0df0fbd43aca42e2d5f478d9-X",
+      'sk_key': 'FLWSECK_TEST-ca148479377714e836526cc61c8c633a-X'
+    };
+
+    // ignore: use_build_context_synchronously
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AdeFlutterWavePay(data),
+      ),
+    ).then((payresponse) async {
+      //response is the response from the payment
+      if (payresponse["status"] != "success") {
+        //show error message
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Payment failed"),
+          backgroundColor: Colors.red,
+        ));
+        return false;
+      }
+
+      var tx_id = payresponse["data"]["tx_id"];
+      processServerData(tx_id, "flutterwave", user_id);
+    });
   }
 
   @override
@@ -117,6 +167,7 @@ class _JoeCheckoutState extends State<JoeCheckout> {
               isUserloggedIn().then((value) {
                 if (value) {
                   //process flutterwave payment
+
                   processFlutterwave();
                 } else {
                   //goto login page
@@ -182,51 +233,6 @@ class _JoeCheckoutState extends State<JoeCheckout> {
         ],
       ),
     );
-  }
-
-  //process flutterwave
-  processFlutterwave() async {
-    //get data from shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    //get string
-    var userdetail = prefs.getString('userdetail');
-    //decode userdetail
-    var userdetaildecoded = jsonDecode(userdetail!);
-    var user_id = userdetaildecoded["user_details"]["id"];
-    //data
-    var data = {
-      'amount': totalAmount,
-      'email': "${userdetaildecoded["user_details"]["email"]}",
-      'phone': "",
-      'name': "${userdetaildecoded["user_details"]["name"]}",
-      'title': 'Products Flutterwave payment',
-      'currency': "NGN",
-      'tx_ref': "AdeFlutterwave-${DateTime.now().millisecondsSinceEpoch}",
-      'icon': "https://www.aqskill.com/wp-content/uploads/2020/05/logo-pde.png",
-      'public_key': "FLWPUBK_TEST-7cd2262e0df0fbd43aca42e2d5f478d9-X",
-      'sk_key': 'FLWSECK_TEST-ca148479377714e836526cc61c8c633a-X'
-    };
-
-    // ignore: use_build_context_synchronously
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AdeFlutterWavePay(data),
-      ),
-    ).then((payresponse) async {
-      //response is the response from the payment
-      if (payresponse["status"] != "success") {
-        //show error message
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Payment failed"),
-          backgroundColor: Colors.red,
-        ));
-        return false;
-      }
-
-      var tx_id = payresponse["data"]["tx_id"];
-      processServerData(tx_id, "flutterwave", user_id);
-    });
   }
 
   //process serverData

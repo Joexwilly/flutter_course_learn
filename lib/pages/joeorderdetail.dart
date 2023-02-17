@@ -30,14 +30,15 @@ class _JoeOrderDetailState extends State<JoeOrderDetail> {
   getOrderDetail() async {
     var dio = Dio();
     var user = await userData();
-
-    var response = await dio.get(
-      "https://xtrahola.com/order-api-single/get_order_by_id/${user["id"]}/${order["order_id"]}",
-    );
-    //set state
-    setState(() {
-      products = response.data["products"];
-    });
+    if (user != null) {
+      var response = await dio.get(
+        "https://xtrahola.com/order-api-single/get_order_by_id/${user["id"]}/${order["order_id"]}",
+      );
+      //set state
+      setState(() {
+        products = response.data["products"];
+      });
+    }
   }
 
   //userdata
